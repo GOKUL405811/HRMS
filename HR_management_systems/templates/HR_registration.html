@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Registration</title>
+
+<!-- Fonts & Bootstrap -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #0d6efd;
+    --secondary: #6f42c1;
+    --gradient: linear-gradient(135deg, #0d6efd, #6f42c1);
+    --input-bg: rgba(255,255,255,0.9);
+}
+
+/* GLOBAL */
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #0044cc, #69b3ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+/* FORM CONTAINER */
+.form-container {
+    width: 95%;
+    max-width: 850px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    padding: 40px 35px;
+    transition: 0.3s ease;
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.9rem;
+    background: var(--gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 25px;
+}
+
+/* Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 28px;
+}
+
+/* Input styles */
+label {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: var(--input-bg);
+    border-radius: 10px;
+    font-size: 14px;
+    transition: 0.25s ease;
+    box-shadow: inset 0 0 0 1px #ddd;
+}
+
+input:focus, textarea:focus, select:focus {
+    box-shadow: inset 0 0 0 2px var(--primary);
+    outline: none;
+}
+
+/* Password eye icon */
+.password-box {
+    position: relative;
+}
+.eye {
+    position: absolute;
+    right: 12px;
+    top: 11px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Strength Bar */
+.progress {
+    height: 6px;
+    border-radius: 10px;
+    margin-top: 4px;
+}
+
+/* Validation Messages */
+.validation-msg {
+    font-size: 12px;
+    margin-top: 3px;
+}
+.valid { color: #28a745; }
+.invalid { color: #dc3545; }
+
+/* Register Button */
+.btn-register {
+    grid-column: 1 / -1;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 10px;
+    background: var(--gradient);
+    color: #fff;
+    border: none;
+    transition: 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+}
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* Back Link */
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    font-weight: 500;
+    color: black;
+    text-decoration: none;
+}
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+
+    body {
+        background: linear-gradient(135deg, #0044cc, #69b3ff); /* keep gradient */
+        padding: 20px 0;
+    }
+
+    .form-container {
+        width: 92%;
+        padding: 22px 18px;
+        border-radius: 18px;
+        max-width: 92%;
+        height: auto;                /* ❗ remove forced 100vh */
+        margin: 20px auto;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    h2 {
+        font-size: 1.6rem;
+        margin-bottom: 18px;
+    }
+
+    input,
+    textarea,
+    select {
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .btn-register {
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+
+    .back-link {
+        font-size: 0.95rem;
+        margin-top: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="form-container">
+    <h2>Register Your Company</h2>
+
+    <!-- Django Messages -->
+    {% if messages %}
+        <div class="alert-box">
+            {% for message in messages %}
+                <p class="text-center {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="form-grid">
+        {% csrf_token %}
+
+        <div>
+            <label>Company Name</label>
+            <input type="text" name="company_name" placeholder="Enter Company Name" required>
+        </div>
+
+        <div>
+            <label>Email</label>
+            <input type="email" id="email" name="company_email" placeholder="Enter Company Email" required>
+            <p id="emailMsg" class="validation-msg"></p>
+        </div>
+
+        <div>
+            <label>Phone</label>
+            <input type="text" id="phone" name="company_phone" maxlength="10" placeholder="10-digit phone number" required>
+            <p id="phoneMsg" class="validation-msg"></p>
+        </div>
+
+        <div>
+            <label>Upload Registered Certificate (PDF)</label>
+            <input type="file" name="company_document" accept="application/pdf" required>
+        </div>
+
+        <div style="grid-column: 1 / -1;">
+            <label>Address</label>
+            <textarea name="company_address" rows="3" placeholder="Company Address" required></textarea>
+        </div>
+
+        <div>
+            <label>Password</label>
+            <div class="password-box">
+                <input type="password" name="company_password" id="hr-password" placeholder="Create Password" required>
+                <span class="eye" onclick="toggleHRPassword()">👁</span>
+            </div>
+            <p id="passwordMsg" class="validation-msg"></p>
+            <div class="progress">
+                <div id="strengthBar" class="progress-bar"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-register">Register</button>
+    </form>
+
+    <a href="{% url 'index' %}" class="back-link">← Back to Home</a>
+</div>
+
+<!-- JavaScript: Validation + Password Eye -->
+<script>
+// 👁 Show/Hide Password
+function toggleHRPassword() {
+    const field = document.getElementById("hr-password");
+    field.type = field.type === "password" ? "text" : "password";
+}
+
+// ✉ Email validation
+const email = document.getElementById("email");
+const emailMsg = document.getElementById("emailMsg");
+
+email.addEventListener("input", () => {
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+    if (!email.value.trim()) return (emailMsg.textContent = "");
+    emailMsg.textContent = pattern.test(email.value) ? "✔ Valid email" : "✘ Invalid email";
+    emailMsg.className = "validation-msg " + (pattern.test(email.value) ? "valid" : "invalid");
+});
+
+// 📞 Phone validation
+const phone = document.getElementById("phone");
+const phoneMsg = document.getElementById("phoneMsg");
+
+phone.addEventListener("input", () => {
+    const pattern = /^[0-9]{10}$/;
+    if (!phone.value.trim()) return (phoneMsg.textContent = "");
+    phoneMsg.textContent = pattern.test(phone.value) ? "✔ Valid phone" : "✘ Must be 10 digits";
+    phoneMsg.className = "validation-msg " + (pattern.test(phone.value) ? "valid" : "invalid");
+});
+
+// 🔐 Password Strength
+const pass = document.getElementById("hr-password");
+const passMsg = document.getElementById("passwordMsg");
+const strengthBar = document.getElementById("strengthBar");
+
+pass.addEventListener("input", () => {
+    const value = pass.value;
+    if (!value.trim()) {
+        strengthBar.style.width = "0";
+        passMsg.textContent = "";
+        return;
+    }
+
+    let strength = 0;
+    if (value.length >= 8) strength++;
+    if (/[A-Z]/.test(value)) strength++;
+    if (/[a-z]/.test(value)) strength++;
+    if (/\d/.test(value)) strength++;
+    if (/[@#$%^&+=]/.test(value)) strength++;
+
+    let color = "";
+    let msg = "";
+
+    if (strength <= 2) {
+        color = "bg-danger";
+        msg = "Weak password";
+    } else if (strength <= 3) {
+        color = "bg-warning";
+        msg = "Medium strength";
+    } else {
+        color = "bg-success";
+        msg = "Strong password";
+    }
+
+    strengthBar.style.width = strength * 20 + "%";
+    strengthBar.className = "progress-bar " + color;
+    passMsg.textContent = msg;
+});
+</script>
+
+</body>
+</html>

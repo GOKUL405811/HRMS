@@ -1,0 +1,352 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee List - HR Panel</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f6fa;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100%;
+    background-color: #1E2A38;
+    color: #fff;
+    padding: 20px;
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.sidebar .brand {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0d6efd;
+}
+
+.sidebar .nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.sidebar .nav-links a:hover,
+.sidebar .nav-links a.active {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.sidebar .logout-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #dc3545;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Sidebar toggle */
+.sidebar.show { left: 0; }
+.toggle-menu { font-size: 1.8rem; cursor: pointer; display: none; }
+
+/* Main */
+.main-content {
+    margin-left: 240px;
+    padding: 25px;
+    transition: 0.3s;
+    min-height: 100vh;
+}
+
+/* Table / Cards */
+.page-header {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.card-custom {
+    background: white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+.table th {
+    background:#2c3e50 !important;
+    color:white;
+    font-weight:600;
+    text-align:center;
+}
+
+.table td {
+    vertical-align:middle;
+    text-align:center;
+}
+
+.table-hover tbody tr:hover { background:#eef3ff; }
+
+.salary-col { font-weight: 600; color: #0d6efd; }
+
+/* Employee modal */
+.emp-image {
+    width:120px; height:120px;
+    border-radius:50%; object-fit:cover;
+    border:4px solid #3498db;
+}
+
+.modal-content { border-radius:12px; }
+.modal-header { background:#3498db; color:white; border-radius:12px 12px 0 0; }
+
+/* Responsive Sidebar */
+@media(max-width: 992px){
+    .sidebar { left: -260px; }
+    .toggle-menu { display: block; }
+    .main-content { margin-left: 0; padding: 15px; }
+}
+
+/* -----------------------------------------------------
+   📱 Mobile Table – Perfect Responsive Card Style
+------------------------------------------------------ */
+@media(max-width: 768px){
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        background: white;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        border: none !important;
+        text-align: left;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    /* Button arrangement */
+    .table tbody td:last-child {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .table tbody td:last-child button,
+    .table tbody td:last-child a {
+        width: 100%;
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+</style>
+</head>
+
+<body>
+    
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="brand"><i class="ri-building-4-line"></i> HR Panel</div>
+    <nav class="nav-links">
+        <a href="{% url 'HR_page' %}"><i class="ri-dashboard-line"></i> Dashboard</a>
+        <a href="{% url 'employee_register' %}" ><i class="ri-user-add-line"></i> Add Employee</a>
+        <a href="{% url 'employee_list' %}" class="active"><i class="ri-team-line"></i> Employee List</a>
+        <a href="{% url 'employee_attendance_list' %}"><i class="ri-time-line"></i> Attendance List</a>
+        <a href="{% url 'late_early_exit' %}"><i class="ri-timer-2-line"></i> Late/Early Exit</a>
+        <a href="{% url 'hr_reports_analytics' %}"><i class="ri-bar-chart-line"></i> Reports & Analytics</a>
+        <a href="{% url 'hr_leave_requests' %}"><i class="ri-file-list-line"></i> Leave Requests</a>
+        <a href="{% url 'payroll_list' %}"><i class="ri-money-dollar-circle-line"></i> Payroll & Salary</a>
+        <a href="{% url 'payment_history' %}"><i class="ri-receipt-line"></i> Payment History</a>
+        <a href="{% url 'manage_holidays' %}"><i class="ri-calendar-2-line"></i> Manage Holidays</a>
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn"><i class="ri-logout-box-r-line"></i> Logout</button>
+        </form>
+    </nav>
+</aside>
+
+<!-- Main -->
+<main class="main-content">
+    <div class="toggle-menu mb-3"><i class="ri-menu-line"></i></div>
+
+    <div class="page-header">
+        <h2 class="fw-bold text-primary">👥 Employee Management</h2>
+        <a href="{% url 'HR_page' %}" class="btn btn-dark">⬅ Back</a>
+    </div>
+
+    <div class="card-custom">
+        <!-- Search -->
+        <form method="GET" class="row g-2 mb-3 search-box">
+            <div class="col-md-6">
+                <input type="text" name="search" value="{{ request.GET.search }}"
+                    class="form-control" placeholder="Search by name, email, employee code">
+            </div>
+            <div class="col-md-4">
+                <select name="position" class="form-select">
+                    <option value="">All Positions</option>
+                    {% for pos in positions %}
+                        <option value="{{ pos }}" {% if request.GET.position == pos %}selected{% endif %}>{{ pos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+
+        <!-- Table -->
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Position</th>
+                        <th>Salary (₹)</th>
+                        <th>Work Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for emp in employees %}
+                    <tr>
+                        <td data-label="Code">{{ emp.emp_unique_id }}</td>
+                        <td data-label="Name">{{ emp.emp_name }}</td>
+                        <td data-label="Email">{{ emp.emp_email }}</td>
+                        <td data-label="Phone">{{ emp.emp_phone }}</td>
+                        <td data-label="Position">{{ emp.emp_position }}</td>
+
+                        <td data-label="Salary" class="salary-col">
+                            {% if emp.salarystructure %}
+                                ₹{{ emp.salarystructure.basic_salary|floatformat:2 }}
+                            {% else %}
+                                <span class="text-muted">Not Set</span>
+                            {% endif %}
+                        </td>
+
+                        <td data-label="Work Time">
+                            {% if emp.work_start_time and emp.work_end_time %}
+                                {{ emp.work_start_time|time:"h:i A" }} - {{ emp.work_end_time|time:"h:i A" }}
+                            {% else %}
+                                <span class="text-muted">Not Assigned</span>
+                            {% endif %}
+                        </td>
+
+                        <td data-label="Actions">
+                            <button class="btn btn-info btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#viewModal{{ emp.id }}">👁 View</button>
+                            <a href="{% url 'edit_employee' emp.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                            <a href="{% url 'delete_employee' emp.id %}" class="btn btn-danger btn-sm"
+                               onclick="return confirm('Delete this employee?');">🗑 Delete</a>
+                        </td>
+                    </tr>
+
+                    <!-- View Modal -->
+                    <div class="modal fade" id="viewModal{{ emp.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Employee Profile</h5>
+                                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    {% if emp.emp_profile %}
+                                        <img src="{{ emp.emp_profile.url }}" class="emp-image mb-3">
+                                    {% else %}
+                                        <img src="{% static 'images/default-user.png' %}" class="emp-image mb-3">
+                                    {% endif %}
+                                    <h5 class="fw-bold">{{ emp.emp_name }}</h5>
+                                    <p class="text-muted">{{ emp.emp_position }}</p>
+                                    <hr>
+                                    <p><strong>Email:</strong> {{ emp.emp_email }}</p>
+                                    <p><strong>Phone:</strong> {{ emp.emp_phone }}</p>
+                                    <p><strong>Address:</strong> {{ emp.emp_address }}</p>
+                                    <p><strong>DOB:</strong> {{ emp.emp_dob }}</p>
+                                    <p><strong>Qualification:</strong> {{ emp.emp_qualification }}</p>
+                                    <p><strong>Experience:</strong> {{ emp.emp_experience }} Years</p>
+                                    <p><strong>Salary:</strong> 
+                                        {% if emp.salarystructure %}
+                                            ₹{{ emp.salarystructure.basic_salary|floatformat:2 }}
+                                        {% else %}
+                                            <span class="text-muted">Not Set</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Work Time:</strong>
+                                        {% if emp.work_start_time and emp.work_end_time %}
+                                            {{ emp.work_start_time|time:"h:i A" }} - {{ emp.work_end_time|time:"h:i A" }}
+                                        {% else %}
+                                            <span class="text-muted">Not Assigned</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center text-muted">No employees found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const sidebar = document.querySelector(".sidebar");
+const toggleBtn = document.querySelector(".toggle-menu");
+toggleBtn?.addEventListener("click", () => sidebar.classList.toggle("show"));
+document.addEventListener("click", e => {
+    if (window.innerWidth < 992 && !sidebar.contains(e.target) && !toggleBtn.contains(e.target))
+        sidebar.classList.remove("show");
+});
+</script>
+</body>
+</html>

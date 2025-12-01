@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting to PayU...</title>
+
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            background: #f4f7fb;
+            margin-top: 60px;
+            color: #333;
+        }
+
+        .loader {
+            border: 6px solid #e5e7eb;
+            border-top: 6px solid #2563eb;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .box {
+            max-width: 420px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .small-text {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="box">
+    <h3 style="color:#2563eb;">Redirecting to PayU...</h3>
+
+    <div class="loader"></div>
+
+    <p class="small-text">Please wait, you will be redirected automatically.</p>
+    <p class="small-text"><strong>Do not refresh or close this window.</strong></p>
+
+    <!-- Auto Submit Form -->
+    <form id="payuForm" method="post" action="{{ payu_url }}">
+        {% csrf_token %}
+        {% for key, value in posted.items %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+    </form>
+</div>
+
+<script>
+    // Auto-submit after 1 second
+    setTimeout(() => {
+        document.getElementById("payuForm").submit();
+    }, 1000);
+</script>
+
+</body>
+</html>

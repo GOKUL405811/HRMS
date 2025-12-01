@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Payslip</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: #f4f7fb;
+    font-family: 'Poppins', sans-serif;
+}
+
+.payslip-box {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.07);
+}
+
+.section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
+    border-left: 4px solid #3b82f6;
+    padding-left: 10px;
+    margin-bottom: 15px;
+}
+
+.print-btn {
+    background: #2563eb;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+}
+.print-btn:hover {
+    background: #1d4ed8;
+}
+
+.table th {
+    width: 40%;
+}
+</style>
+</head>
+
+<body>
+
+<div class="payslip-box">
+
+    <h3 class="text-center text-primary mb-3">
+        🧾 Salary Payslip — {{ payroll.month }} {{ payroll.year }}
+    </h3>
+
+    <hr>
+
+    <!-- Employee Info -->
+    <div class="section-title">Employee Details</div>
+    <p><strong>Name:</strong> {{ employee.emp_name }}</p>
+    <p><strong>Email:</strong> {{ employee.emp_email }}</p>
+    <p><strong>Position:</strong> {{ employee.emp_position }}</p>
+
+    <hr>
+
+    <!-- Salary Info -->
+    <div class="section-title">Salary Breakdown</div>
+
+    <table class="table table-bordered">
+        <tr><th>Gross Salary</th><td>₹{{ payroll.gross_salary }}</td></tr>
+        <tr><th>Deductions</th><td>₹{{ payroll.deductions }}</td></tr>
+        <tr><th><strong>Net Salary</strong></th><td><strong>₹{{ payroll.net_salary }}</strong></td></tr>
+    </table>
+
+    <!-- Attendance Info -->
+    <div class="section-title">Attendance Summary</div>
+    <table class="table table-bordered">
+        <tr><th>Total Leaves</th><td>{{ payroll.total_leave }}</td></tr>
+        <tr><th>Total Holidays</th><td>{{ payroll.holidays }}</td></tr>
+        <tr><th>Weekly Offs</th><td>{{ payroll.weekly_offs }}</td></tr>
+    </table>
+
+    <!-- Payment Details -->
+    {% if payroll.is_paid %}
+    <div class="section-title">Payment Details</div>
+    <table class="table table-bordered">
+        <tr><th>Status</th><td><span class="badge bg-success">Paid</span></td></tr>
+        <tr><th>Payment Date</th><td>{{ payroll.payment_date|date:"d M Y, h:i A" }}</td></tr>
+        <tr><th>Payment Method</th><td>{{ payroll.payment_method }}</td></tr>
+        <tr><th>Transaction ID</th><td>{{ payroll.transaction_id }}</td></tr>
+    </table>
+    {% else %}
+    <div class="section-title text-danger">Payment Status</div>
+    <p class="text-danger fw-bold">❌ Salary Not Paid</p>
+    {% endif %}
+
+    <hr>
+
+    <div class="text-center">
+        <button class="print-btn" onclick="window.print()">🖨️ Print Payslip</button>
+
+        {% if is_employee %}
+            <a href="{% url 'employee_payment_history' %}" class="btn btn-secondary ms-2 mt-2">
+                ⬅ Back to My Payments
+            </a>
+        {% else %}
+            <a href="{% url 'payment_history' %}" class="btn btn-secondary ms-2 mt-2">
+                ⬅ Back to Payroll
+            </a>
+        {% endif %}
+    </div>
+
+
+</div>
+
+</body>
+</html>

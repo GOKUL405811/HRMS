@@ -1,0 +1,406 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Late / Early Exit Reports</title>
+
+<!-- Bootstrap & Remix Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+/* ----------------------------------------------------
+   GLOBAL PREMIUM STYLING (Matches Dashboard)
+---------------------------------------------------- */
+:root {
+    --blue: #0d6efd;
+    --purple: #6f42c1;
+    --text-dark: #0b2748;
+    --text-light: #6b7b8c;
+    --glass-bg: rgba(255,255,255,0.55);
+    --glass-bg-strong: rgba(255,255,255,0.85);
+    --border-glass: rgba(255,255,255,0.55);
+    --card-radius: 16px;
+    --shadow-soft: 0 10px 30px rgba(13,40,80,0.10);
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #dbe6ff 0%, #f5f9ff 50%, #eaf1ff 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--text-dark);
+}
+
+/* ----------------------------------------------------
+   FIXED SIDEBAR (Matches Dashboard Perfectly)
+---------------------------------------------------- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid var(--border-glass);
+    box-shadow: 8px 0 25px rgba(13,40,80,0.05);
+    padding: 28px 20px;
+    z-index: 1000;
+    transition: 0.35s ease;
+}
+
+/* Brand Section FIXED */
+.sidebar .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sidebar .brand .logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color: #fff;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.sidebar .brand h3 {
+    font-weight: 700;
+    color: var(--blue);
+    margin: 0;
+}
+
+/* Sidebar Links */
+.sidebar .nav-links a {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: 0.25s;
+    margin-bottom: 3px;
+}
+
+.sidebar .nav-links a:hover,
+.sidebar .nav-links a.active {
+    background: rgba(13,110,253,0.12);
+    color: var(--blue);
+    transform: translateX(6px);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    color: var(--text-light);
+    font-size: 13px;
+}
+
+/* ----------------------------------------------------
+   HEADER (Glass)
+---------------------------------------------------- */
+.header {
+    margin-left: 260px;
+    padding: 22px 36px;
+    background: rgba(255,255,255,0.70);
+    border-bottom: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.header h2 {
+    color: var(--blue);
+    font-weight: 700;
+}
+
+/* ----------------------------------------------------
+   PROFILE ICON
+---------------------------------------------------- */
+.ProfileIcon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 3px solid var(--blue);
+    object-fit: cover;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(13,110,253,0.12);
+    transition: 0.3s;
+}
+
+.ProfileIcon:hover {
+    transform: scale(1.08);
+}
+
+.ProfileMenu {
+    position: absolute;
+    right: 0;
+    top: 65px;
+    width: 180px;
+    background: var(--glass-bg-strong);
+    border-radius: 12px;
+    border: 1px solid var(--border-glass);
+    padding: 6px;
+    display: none;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+}
+
+.ProfileMenu a {
+    display: block;
+    padding: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    color: var(--text-dark);
+}
+
+.ProfileMenu a:hover {
+    background: rgba(13,110,253,0.08);
+}
+
+/* ----------------------------------------------------
+   TABLE CARD (Glass Premium)
+---------------------------------------------------- */
+.table-card {
+    background: var(--glass-bg-strong);
+    padding: 35px;
+    border-radius: var(--card-radius);
+    max-width: 950px;
+    margin: 50px auto;
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-soft);
+}
+
+.table th {
+    background: var(--blue);
+    color: #fff;
+    text-align: center;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* ----------------------------------------------------
+   MOBILE TABLE (Card Style)
+---------------------------------------------------- */
+@media(max-width: 768px) {
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        background: var(--glass-bg-strong);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 5px;
+        border: none;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--blue);
+    }
+
+    .table-card {
+        margin: 30px 15px;
+    }
+}
+
+/* PHONE SMALL */
+@media(max-width: 480px) {
+    .table td {
+        font-size: 14px;
+    }
+}
+
+/* VERY SMALL */
+@media(max-width: 360px) {
+    .table td {
+        font-size: 13px;
+    }
+}
+
+/* ----------------------------------------------------
+   MOBILE MENU BUTTON
+---------------------------------------------------- */
+.MenuBtn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    font-size: 32px;
+    color: var(--blue);
+    cursor: pointer;
+    display: none;
+    z-index: 1100;
+}
+
+/* Hide on desktop */
+@media (min-width: 769px) {
+    .MenuBtn {
+        display: none !important;
+    }
+}
+
+@media(max-width:768px){
+    .MenuBtn { display: block; }
+
+    .sidebar { left: -260px; }
+    .sidebar.show { left: 0; }
+
+    .header { margin-left: 0; padding-left: 55px; }
+}
+</style>
+</head>
+
+<body>
+<!-- ☰ Menu Button -->
+<i class="ri-menu-line MenuBtn" id="menuBtn" onclick="toggleSidebar()"></i>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <div class="logo">HRM</div>
+        <h3>Employee Panel</h3>
+    </div>
+    <nav class="nav-links">
+        <a href="{% url 'employee_home' %}"><i class="ri-home-4-line"></i> Dashboard</a>
+        <a href="{% url 'attendance_mark' %}"><i class="ri-calendar-check-line"></i> Attendance</a>
+        <a href="{% url 'late_early_reports' %}" class="active"><i class="ri-time-line"></i> Late/Early Reports</a>
+        <a href="{% url 'employee_payment_history' %}"><i class="ri-money-pound-circle-line"></i> Payment History</a>
+        <a href="{% url 'apply_leave' %}"><i class="ri-edit-line"></i> Apply Leave</a>
+        <a href="{% url 'leave_status' %}"><i class="ri-task-line"></i> Leave Status</a>
+        <a href="{% url 'reports_analytics' %}"><i class="ri-bar-chart-2-line"></i> Reports</a>
+    </nav>
+
+    <div class="sidebar-footer">&copy; HRMatrix</div>
+</aside>
+
+<!-- Header -->
+<header class="header">
+    <h2>Late / Early Exit Reports</h2>
+    <div class="position-relative">
+        {% if emp_profile %}
+            <img src="{{ emp_profile.url }}" class="ProfileIcon" onclick="toggleProfileMenu()">
+        {% else %}
+            <img src="{% static 'images/profile.png' %}" class="ProfileIcon" onclick="toggleProfileMenu()">
+        {% endif %}
+        <div class="ProfileMenu" id="profileMenu">
+            <a href="{% url 'employee_profile' emp_id=emp_id %}">👤 View Profile</a>
+            <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Table Section -->
+<main>
+    <section class="table-card">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                        {% if record.status %}
+                        <tr>
+                            <td data-label="Date">{{ record.date }}</td>
+                            <td data-label="Check-In">{{ record.check_in|default:"-" }}</td>
+                            <td data-label="Check-Out">{{ record.check_out|default:"-" }}</td>
+                            <td data-label="Status">
+                                {% if record.status == "Late" %}
+                                    <span class="badge bg-warning text-dark">{{ record.status }}</span>
+                                {% elif record.status == "Early Exit" %}
+                                    <span class="badge bg-danger">{{ record.status }}</span>
+                                {% elif record.status == "Late / Early Exit" %}
+                                    <span class="badge bg-danger">{{ record.status }}</span>
+                                {% elif record.status == "Present" %}
+                                    <span class="badge bg-success">{{ record.status }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ record.status }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% empty %}
+                        <tr><td colspan="4" class="text-center">No records found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<!-- JS -->
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    if (window.innerWidth <= 768) {
+        sidebar.classList.toggle("show");
+        menuBtn.style.display = sidebar.classList.contains("show") ? "none" : "block";
+    }
+}
+
+document.addEventListener("click", function(e) {
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+    if (window.innerWidth <= 768 && sidebar.classList.contains("show")) {
+        if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+            sidebar.classList.remove("show");
+            setTimeout(() => menuBtn.style.display = "block", 200);
+        }
+    }
+});
+
+function toggleProfileMenu() {
+    const menu = document.getElementById("profileMenu");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+}
+
+document.addEventListener("click", e => {
+    const menu = document.getElementById("profileMenu");
+    const icon = document.querySelector(".ProfileIcon");
+    if (!menu.contains(e.target) && !icon.contains(e.target)) {
+        menu.style.display = "none";
+    }
+});
+</script>
+
+</body>
+</html>

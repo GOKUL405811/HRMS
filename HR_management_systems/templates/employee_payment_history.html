@@ -1,0 +1,290 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Salary Payments</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ----------------------------------------------------
+   PREMIUM DASHBOARD-MATCHING BASE STYLES
+---------------------------------------------------- */
+
+:root {
+    --blue: #0d6efd;
+    --purple: #6f42c1;
+    --text-dark: #0b2748;
+    --text-light: #6b7b8c;
+    --glass-bg: rgba(255, 255, 255, 0.55);
+    --glass-bg-strong: rgba(255, 255, 255, 0.90);
+    --border-glass: rgba(255, 255, 255, 0.55);
+    --card-radius: 16px;
+    --shadow-soft: 0 10px 30px rgba(13,40,80,0.10);
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #dbe6ff, #f5f9ff, #eaf1ff);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    color: var(--text-dark);
+}
+
+/* Glass card container */
+.box {
+    max-width: 900px;
+    margin: 40px auto;
+    background: var(--glass-bg-strong);
+    padding: 35px;
+    border-radius: var(--card-radius);
+    border: 1px solid var(--border-glass);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+}
+
+/* Title */
+h3 {
+    font-weight: 700;
+    text-align: center;
+    color: var(--blue);
+    margin-bottom: 20px;
+}
+
+/* BACK BUTTON */
+.btn-back {
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    color: white;
+    font-weight: 600;
+    padding: 12px 26px;
+    border-radius: 12px;
+    border: none;
+    transition: 0.3s ease;
+}
+
+.btn-back:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-soft);
+}
+
+/* TABLE */
+.table-responsive {
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+}
+
+.table thead th {
+    background: var(--blue);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    padding: 12px;
+}
+
+.table td {
+    font-weight: 600;
+    vertical-align: middle;
+    text-align: center;
+    background: rgba(255,255,255,0.85);
+}
+
+.table tbody tr:hover td {
+    background: rgba(13,110,253,0.08);
+}
+
+/* VIEW BUTTON */
+.btn-info {
+    background: linear-gradient(90deg, var(--blue), var(--purple)) !important;
+    border: none;
+    padding: 8px 18px;
+    color: white !important;
+    font-weight: 700;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.btn-info:hover {
+    opacity: 0.9;
+}
+
+
+/* ====================================================
+   📱 MOBILE BREAKPOINT 1 — up to 768px 
+   Tablets & large mobile screens
+==================================================== */
+@media(max-width: 768px) {
+
+    .box {
+        margin: 20px;
+        padding: 25px;
+    }
+
+    h3 {
+        font-size: 22px;
+    }
+
+    /* Hide table header */
+    .table thead {
+        display: none;
+    }
+
+    /* Card-style rows */
+    .table tbody tr {
+        display: block;
+        margin-bottom: 18px;
+        background: var(--glass-bg-strong);
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        text-align: left;
+        padding: 10px 4px;
+        border: none;
+        font-size: 15px;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--blue);
+    }
+
+    /* Button: centered & larger */
+    .btn-info {
+        width: 40%;
+        margin: 1px auto 10;
+        display: block;
+        padding: 12px !important;
+        font-size: 16px !important;
+        border-radius: 14px !important;
+    }
+
+    /* Back button full width */
+    .btn-back {
+        width: 100%;
+        font-size: 16px;
+        padding: 14px;
+    }
+}
+
+
+/* ====================================================
+   📱 MOBILE BREAKPOINT 2 — up to 480px 
+   Normal Android/iPhone sizes
+==================================================== */
+@media(max-width: 480px) {
+
+    h3 {
+        font-size: 20px;
+    }
+
+    .table td {
+        font-size: 14px;
+        padding: 8px 2px;
+    }
+
+    .btn-info {
+        width: 80%;
+        font-size: 15px !important;
+    }
+
+    .btn-back {
+        font-size: 15px;
+        padding: 12px;
+    }
+}
+
+
+/* ====================================================
+   📱 MOBILE BREAKPOINT 3 — up to 360px 
+   Small phones (iPhone SE, old Android)
+==================================================== */
+@media(max-width: 360px) {
+
+    .box {
+        padding: 18px;
+    }
+
+    h3 {
+        font-size: 18px;
+    }
+
+    .table td {
+        font-size: 13px;
+    }
+
+    .btn-info {
+        width: 100%;
+        padding: 10px !important;
+        font-size: 14px !important;
+    }
+
+    .btn-back {
+        width: 100%;
+        font-size: 14px;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+
+    <div class="box">
+
+        <h3 class="text-center text-primary mb-3">💰 My Salary Payment History</h3>
+
+        <div class="text-center mb-3">
+            <a href="{% url 'employee_home' %}" class="btn btn-back">⬅ Back to Dashboard</a>
+        </div>
+
+        {% if payments %}
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Month</th>
+                        <th>Net Salary</th>
+                        <th>Method</th>
+                        <th>Paid On</th>
+                        <th>Payslip</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for p in payments %}
+                    <tr>
+                        <td data-label="#"> {{ forloop.counter }}</td>
+                        <td data-label="Month">{{ p.month }} {{ p.year }}</td>
+                        <td data-label="Net Salary" class="fw-bold text-success">₹{{ p.amount }}</td>
+                        <td data-label="Method">{{ p.payment_method }}</td>
+                        <td data-label="Paid On">{{ p.paid_on|date:"d M Y, h:i A" }}</td>
+                        <td data-label="Payslip">
+                            <a href="{% url 'view_payslip' p.payroll.id %}" class="btn btn-sm btn-info text-white">🧾
+                                View</a>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+        <p class="text-center text-muted">No payments received yet.</p>
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

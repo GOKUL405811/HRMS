@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | HRMatrix</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+
+        /* GLOBAL FIX — Prevents input overflow and fixes right-side stretching */
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0d6efd;
+            --secondary: #6f42c1;
+            --gradient: linear-gradient(135deg, #0d6efd, #6f42c1);
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #0044cc, #69b3ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Wrapper */
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* Login Card */
+        .login-card {
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 35px 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Title & Subtitle */
+        .title {
+            background: var(--gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        /* Messages */
+        .message-box {
+            background: rgba(255,80,80,0.15);
+            border-left: 4px solid #d9534f;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .msg {
+            margin: 0;
+            font-size: 14px;
+            color: #b00000;
+        }
+
+        /* Form */
+        .form label {
+            font-weight: 500;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .form input {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255,255,255,0.9);
+            box-shadow: inset 0 0 0 1px #ccc;
+            margin-bottom: 15px;
+            font-size: 14px;
+            transition: 0.25s;
+        }
+
+        .form input:focus {
+            box-shadow: inset 0 0 0 2px var(--primary);
+            outline: none;
+        }
+
+        /* Password Box */
+        .password-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding-right: 50px !important;   /* PERFECT FIX: makes right side equal */
+        }
+
+        .password-box .eye {
+            position: absolute;
+            right: 14px;
+            top: 35%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            opacity: 0.8;
+            transition: 0.2s;
+        }
+
+        .password-box .eye:hover {
+            opacity: 1;
+        }
+
+        /* Login Button */
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            background: var(--gradient);
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+        }
+
+        /* Bottom Links */
+        .links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+        }
+
+        .links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: var(--primary);
+            transition: 0.2s;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Improvements */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 22px;
+            }
+            .title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+    <div class="login-card">
+
+        <h2 class="title">Welcome Back</h2>
+        <p class="subtitle">Login to continue to HRMatrix</p>
+
+        {% if messages %}
+            <div class="message-box">
+                {% for message in messages %}
+                    <p class="msg {{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="form">
+            {% csrf_token %}
+
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Enter email" required>
+
+            <label>Password</label>
+            <div class="password-box">
+                <input type="password" name="password" id="password-field" placeholder="Enter password" required>
+                <span class="eye" onclick="togglePassword()">👁</span>
+            </div>
+
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+
+        <div class="links">
+            <a href="{% url 'index' %}">← Back to Home</a>
+            <a href="{% url 'forgot_password' %}" class="forgot">Forgot Password?</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    let field = document.getElementById("password-field");
+    field.type = field.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

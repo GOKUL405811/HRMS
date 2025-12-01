@@ -1,0 +1,318 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Reports & Analytics - HR Panel</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f6fa;
+    margin: 0;
+    overflow-x: hidden;
+}
+section.row.g-4 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+section.row.g-4 .col-md-2 {
+    flex: 1 1 150px;
+    max-width: 180px;
+}
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100%;
+    background-color: #1E2A38;
+    color: #fff;
+    padding: 20px;
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.sidebar .brand {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0d6efd;
+}
+
+.sidebar .nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.sidebar .nav-links a:hover,
+.sidebar .nav-links a.active {
+    background-color: #0d6efd;
+}
+
+.sidebar .logout-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: #dc3545;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Sidebar toggle */
+.sidebar.show { left: 0; }
+.toggle-menu {
+    font-size: 1.8rem;
+    cursor: pointer;
+    display: none;
+}
+
+/* Main content */
+.main-content {
+    margin-left: 240px;
+    padding: 25px;
+    transition: 0.3s;
+    min-height: 100vh;
+}
+
+/* Header */
+.top-header {
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+/* Cards */
+.card {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: 0.3s;
+}
+.card:hover { transform: translateY(-4px); }
+
+/* Chart Card */
+.chart-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+@media(max-width: 992px) {
+    .sidebar { left: -260px; }
+    .toggle-menu { display: block; }
+    .main-content { margin-left: 0; padding: 15px; }
+}
+</style>
+</head>
+
+<body>
+    
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="brand"><i class="ri-building-4-line"></i> HR Panel</div>
+    <nav class="nav-links">
+        <a href="{% url 'HR_page' %}"><i class="ri-dashboard-line"></i> Dashboard</a>
+        <a href="{% url 'employee_register' %}" ><i class="ri-user-add-line"></i> Add Employee</a>
+        <a href="{% url 'employee_list' %}" ><i class="ri-team-line"></i> Employee List</a>
+        <a href="{% url 'employee_attendance_list' %}" ><i class="ri-time-line"></i> Attendance List</a>
+        <a href="{% url 'late_early_exit' %}"><i class="ri-timer-2-line"></i> Late/Early Exit</a>
+        <a href="{% url 'hr_reports_analytics' %}" class="active"><i class="ri-bar-chart-line"></i> Reports & Analytics</a>
+        <a href="{% url 'hr_leave_requests' %}"><i class="ri-file-list-line"></i> Leave Requests</a>
+        <a href="{% url 'payroll_list' %}"><i class="ri-money-dollar-circle-line"></i> Payroll & Salary</a>
+        <a href="{% url 'payment_history' %}"><i class="ri-receipt-line"></i> Payment History</a>
+        <a href="{% url 'manage_holidays' %}"><i class="ri-calendar-2-line"></i> Manage Holidays</a>
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn"><i class="ri-logout-box-r-line"></i> Logout</button>
+        </form>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="top-header">
+        <div class="d-flex align-items-center gap-3">
+            <div class="toggle-menu"><i class="ri-menu-line"></i></div>
+            <h2>Reports & Analytics</h2>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <section class="row g-4 mt-3">
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Total Employees</h6><p class="fs-4 fw-bold text-primary">{{ total_employees }}</p></div></div>
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Present</h6><p class="fs-4 fw-bold text-success">{{ total_present }}</p></div></div>
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Late</h6><p class="fs-4 fw-bold text-warning">{{ total_late }}</p></div></div>
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Early Exit</h6><p class="fs-4 fw-bold text-secondary">{{ total_early_exit }}</p></div></div>
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Late/Early</h6><p class="fs-4 fw-bold text-danger">{{ total_late_early }}</p></div></div>
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Absent</h6><p class="fs-4 fw-bold text-muted">{{ total_absent }}</p></div></div>
+        <div class="col-md-2"><div class="card p-3 text-center"><h6>Leaves</h6><p class="fs-4 fw-bold text-info">{{ total_leaves }}</p></div></div>
+    </section>
+
+    <!-- Chart -->
+    <div class="chart-card mt-4">
+        <h5 class="fw-bold mb-4 text-center">Employee Attendance Overview</h5>
+        <canvas id="attendanceChart" style="height: 400px;"></canvas>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+
+    const sidebar = document.querySelector(".sidebar");
+const toggleBtn = document.querySelector(".toggle-menu");
+
+toggleBtn?.addEventListener("click", () => sidebar.classList.toggle("show"));
+
+// Close sidebar on outside click (Mobile)
+document.addEventListener("click", (e) => {
+    if (window.innerWidth < 992 &&
+        !sidebar.contains(e.target) &&
+        !toggleBtn.contains(e.target)) {
+        sidebar.classList.remove("show");
+    }
+});
+/* --- Parse data from Django context --- */
+const labels = JSON.parse('{{ employee_names|escapejs }}');
+const presentData = JSON.parse('{{ days_present|escapejs }}') || [];
+const lateData = JSON.parse('{{ days_late|escapejs }}') || [];
+const earlyExitData = JSON.parse('{{ days_early_exit|escapejs }}') || [];
+const lateEarlyData = JSON.parse('{{ days_late_early_exit|escapejs }}') || [];
+const absentData = JSON.parse('{{ days_absent|escapejs }}') || [];
+const leaveData = JSON.parse('{{ days_leave|escapejs }}') || [];
+
+/* --- Compute maximum Y value for scaling --- */
+function arrayMax(arrays, defaultVal = 0) {
+    let mx = defaultVal;
+    arrays.forEach(a => {
+        if (!Array.isArray(a)) return;
+        a.forEach(v => {
+            const n = Number(v) || 0;
+            if (n > mx) mx = n;
+        });
+    });
+    return mx;
+}
+const globalMax = arrayMax([presentData, lateData, earlyExitData, lateEarlyData, absentData, leaveData]);
+const suggestedMax = Math.max(5, Math.ceil(globalMax * 1.2));
+
+/* --- Chart Canvas Setup --- */
+const canvasEl = document.getElementById('attendanceChart');
+if (canvasEl) {
+    canvasEl.style.display = 'block';
+    canvasEl.parentElement.style.height = '420px';
+}
+
+/* --- Chart.js Configuration --- */
+const chart = new Chart(canvasEl.getContext('2d'), {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [
+            { label: 'Present', data: presentData, backgroundColor: '#28a745' },
+            { label: 'Late', data: lateData, backgroundColor: '#ffc107' },
+            { label: 'Early Exit', data: earlyExitData, backgroundColor: '#6f42c1' },
+            { label: 'Late/Early Exit', data: lateEarlyData, backgroundColor: '#dc3545' },
+            { label: 'Absent', data: absentData, backgroundColor: '#6c757d' },
+            { label: 'Leave', data: leaveData, backgroundColor: '#0dcaf0' }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { font: { size: 13 } }
+            },
+            tooltip: {
+                enabled: true,
+                mode: 'nearest',
+                intersect: true,
+                callbacks: {
+                    // ✅ Tooltip title: Employee name only
+                    title: function (context) {
+                        return labels[context[0].dataIndex];
+                    },
+                    // ✅ Tooltip label: Only show dataset name + value
+                    label: function (context) {
+                        return `${context.dataset.label}: ${context.formattedValue} days`;
+                    },
+                    // ✅ Remove extra footer or before/after labels
+                    afterBody: function () { return ''; },
+                    footer: function () { return ''; }
+                },
+                backgroundColor: '#fff',
+                titleColor: '#000',
+                titleFont: { weight: 'bold' },
+                bodyColor: '#333',
+                borderColor: '#ccc',
+                borderWidth: 1,
+                displayColors: true,
+                padding: 10,
+            }
+        },
+        interaction: {
+            mode: 'nearest',
+            intersect: true
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'Employees' },
+                ticks: { maxRotation: 0, autoSkip: true }
+            },
+            y: {
+                beginAtZero: true,
+                suggestedMax: suggestedMax,
+                title: { display: true, text: 'Days' },
+                ticks: { precision: 0 }
+            }
+        },
+        datasets: {
+            bar: {
+                maxBarThickness: 40,
+                categoryPercentage: 0.75,
+                barPercentage: 0.85
+            }
+        }
+    }
+});
+
+/* --- Handle window resize --- */
+window.addEventListener('resize', () => {
+    if (chart) chart.resize();
+});
+</script>

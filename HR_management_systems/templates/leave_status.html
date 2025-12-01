@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Leave Status</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/employee.css' %}">
+
+<style>
+body {
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    background: #f8f9fa;
+    color: #1a1a1a;
+}
+
+/* Navbar */
+.navbar {
+    padding: 15px 20px;
+}
+
+/* Table Card */
+.leave-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 1000px;
+    margin: 50px auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* Table */
+.table th, .table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.table th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.badge {
+    font-weight: 600;
+}
+
+/* Messages */
+.alert {
+    max-width: 1000px;
+    margin: 20px auto;
+    border-radius: 12px;
+}
+
+/* --------------------------------------------------------
+   📱 MOBILE CARD STYLE TABLE (Responsive)
+-------------------------------------------------------- */
+
+@media(max-width: 768px) {
+
+    .leave-card {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    /* Hide table heading */
+    .table thead {
+        display: none;
+    }
+
+    /* Table row = card */
+    .table tbody tr {
+        display: block;
+        margin-bottom: 15px;
+        border-radius: 12px;
+        background: #ffffff;
+        padding: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 6px;
+        border: none;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #007bff;
+    }
+
+    .btn-info, .btn-danger {
+        width: 48%;
+        font-size: 14px;
+        padding: 10px !important;
+        border-radius: 10px;
+    }
+
+    .text-muted {
+        text-align: right;
+        width: 100%;
+        display: block;
+    }
+}
+
+/* Phones below 480px */
+@media(max-width: 480px) {
+    .table td {
+        font-size: 14px;
+    }
+
+    .btn-info, .btn-danger {
+        width: 100%;
+        margin-top: 8px;
+    }
+}
+
+/* Very small screens */
+@media(max-width: 360px) {
+    .table td {
+        font-size: 13px;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand fw-bold">Employee Portal</span>
+        <div class="d-flex gap-2">
+            <a href="{% url 'apply_leave' %}" class="btn btn-success btn-sm">Apply Leave +</a>
+            <a href="{% url 'employee_home' %}" class="btn btn-warning btn-sm">Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Card -->
+<div class="leave-card">
+    <h3 class="text-center fw-bold mb-4">My Leave Requests</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Document</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for leave in leaves %}
+                <tr>
+                    <td data-label="Type">{{ leave.leave_type }}</td>
+                    <td data-label="From">{{ leave.from_date|date:"Y-m-d" }}</td>
+                    <td data-label="To">{{ leave.to_date|date:"Y-m-d" }}</td>
+                    <td data-label="Days">{{ leave.total_days }} Days</td>
+                    <td data-label="Reason">{{ leave.reason }}</td>
+
+                    <td data-label="Status">
+                        {% if leave.status == "PENDING" %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif leave.status == "APPROVED" %}
+                            <span class="badge bg-success">Approved</span>
+                        {% elif leave.status == "REJECTED" %}
+                            <span class="badge bg-danger">Rejected</span>
+                        {% elif leave.status == "CANCELLED" %}
+                            <span class="badge bg-secondary">Cancelled</span>
+                        {% endif %}
+                    </td>
+
+                    <td data-label="Document">
+                        {% if leave.document %}
+                            <a href="{{ leave.document.url }}" class="btn btn-info btn-sm" target="_blank">View</a>
+                        {% else %}
+                            <span class="text-muted">No File</span>
+                        {% endif %}
+                    </td>
+
+                    <td data-label="Action">
+                        {% if leave.status == "PENDING" %}
+                            <form method="POST" action="{% url 'cancel_leave' leave.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            </form>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-muted">No leave requests found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard | HRMatrix</title>
+
+    <!-- Bootstrap & Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+        /* ----------------------------------------------------
+           GLOBAL MODERN PREMIUM STYLE
+        ---------------------------------------------------- */
+        :root {
+            --blue: #0d6efd;
+            --purple: #6f42c1;
+            --text-dark: #0b2748;
+            --text-light: #6b7b8c;
+            --glass-bg: rgba(255, 255, 255, 0.55);
+            --glass-bg-strong: rgba(255, 255, 255, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.55);
+            --card-radius: 16px;
+            --shadow-soft: 0 10px 30px rgba(13, 40, 80, 0.10);
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #dbe6ff 0%, #f5f9ff 50%, #eaf1ff 100%);
+            overflow-x: hidden;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+
+        /* ----------------------------------------------------
+           SIDEBAR (Premium)
+        ---------------------------------------------------- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 260px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-glass);
+            box-shadow: 8px 0 25px rgba(13, 40, 80, 0.05);
+            padding: 28px 20px;
+            transition: 0.35s ease;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .brand .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .brand h3 {
+            font-weight: 700;
+            color: var(--blue);
+            margin: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            margin-top: 10px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-dark);
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .nav-links a i {
+            font-size: 18px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(13, 110, 253, 0.12);
+            color: var(--blue);
+            transform: translateX(6px);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            color: var(--text-light);
+            font-size: 13px;
+            padding-top: 14px;
+        }
+
+
+
+        /* ----------------------------------------------------
+           HEADER (Glass Premium)
+        ---------------------------------------------------- */
+        .header {
+            margin-left: 260px;
+            padding: 20px 35px;
+            background: rgba(255, 255, 255, 0.70);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-glass);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 990;
+        }
+
+        .header h2 {
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 4px;
+        }
+
+        .header small {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+
+        /* ----------------------------------------------------
+           PROFILE (Improved)
+        ---------------------------------------------------- */
+        .ProfileIcon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 3px solid var(--blue);
+            cursor: pointer;
+            object-fit: cover;
+            transition: 0.3s;
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.12);
+        }
+
+        .ProfileIcon:hover {
+            transform: scale(1.08);
+        }
+
+        .ProfileMenu {
+            position: absolute;
+            right: 0;
+            top: 65px;
+            width: 180px;
+            background: var(--glass-bg-strong);
+            border-radius: 12px;
+            padding: 6px;
+            display: none;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-glass);
+        }
+
+        .ProfileMenu a {
+            display: block;
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .ProfileMenu a:hover {
+            background: rgba(13, 110, 253, 0.08);
+        }
+
+
+
+        /* ----------------------------------------------------
+           MAIN CONTENT
+        ---------------------------------------------------- */
+        .dashboard-container {
+            margin-left: 260px;
+            padding: 25px 35px;
+        }
+
+
+        /* Premium Card Design */
+        .dashboard-card {
+            background: var(--glass-bg-strong);
+            backdrop-filter: blur(8px);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-soft);
+            padding: 25px;
+            text-align: center;
+            border: 1px solid var(--border-glass);
+            transition: 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard-card h5 {
+            color: var(--blue);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-card p {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+
+        /* Salary Section Full Width */
+        .salary-box {
+            background: var(--glass-bg-strong);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--border-glass);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+        }
+
+
+        /* Action Button Premium */
+        .action-btn {
+            background: linear-gradient(90deg, var(--blue), var(--purple));
+            border: none;
+            padding: 14px 28px;
+            font-weight: 700;
+            color: white;
+            border-radius: 12px;
+            transition: 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-soft);
+        }
+
+
+        /* ----------------------------------------------------
+           MOBILE RESPONSIVE
+        ---------------------------------------------------- */
+        .MenuBtn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 32px;
+            color: var(--blue);
+            z-index: 1100;
+            cursor: pointer;
+        }
+
+        @media(max-width: 768px) {
+            .MenuBtn {
+                display: block;
+            }
+
+            .sidebar {
+                left: -260px;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .header {
+                margin-left: 0;
+                padding-left: 55px;
+            }
+
+            .dashboard-container {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- MENU BUTTON (Mobile) -->
+    <i class="ri-menu-line MenuBtn" id="menuBtn" onclick="toggleSidebar()"></i>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="logo">HRM</div>
+            <h3>Employee Panel</h3>
+        </div>
+
+        <nav class="nav-links">
+            <a href="{% url 'employee_home' %}" class="active"><i class="ri-home-4-line"></i> Dashboard</a>
+            <a href="{% url 'attendance_mark' %}"><i class="ri-calendar-check-line"></i> Attendance</a>
+            <a href="{% url 'late_early_reports' %}"><i class="ri-time-line"></i> Late/Early Reports</a>
+            <a href="{% url 'employee_payment_history' %}"><i class="ri-money-pound-circle-line"></i> Payment
+                History</a>
+            <a href="{% url 'apply_leave' %}"><i class="ri-edit-line"></i> Apply Leave</a>
+            <a href="{% url 'leave_status' %}"><i class="ri-task-line"></i> Leave Status</a>
+            <a href="{% url 'reports_analytics' %}"><i class="ri-bar-chart-2-line"></i> Reports</a>
+        </nav>
+
+        <div class="sidebar-footer">&copy; HRMatrix</div>
+    </aside>
+
+
+    <!-- HEADER -->
+    <header class="header">
+        <div>
+            <h2>Welcome, {{ employee_name }}</h2>
+            <small>Have a productive day 👋</small>
+        </div>
+
+        <div class="profile-toggle">
+            {% if emp_profile %}
+            <img src="{{ emp_profile.url }}" class="ProfileIcon" id="profileIcon">
+            {% else %}
+            <img src="{% static 'images/profile.png' %}" class="ProfileIcon" id="profileIcon">
+            {% endif %}
+
+            <div class="ProfileMenu" id="profileMenu">
+                <a href="{% url 'employee_profile' emp_id=emp_id %}">👤 View Profile</a>
+                <a href="{% url 'logout' %}">🚪 Logout</a>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-container">
+
+        {% if show_instructions %}
+        <div class="alert alert-warning shadow p-4 mb-4" style="border-radius:12px;">
+            <strong class="text-danger">⚠ Please complete your profile.</strong>
+            <ul class="mt-2">
+                {% for item in missing_items %}
+                <li>✔ {{ item }}</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'employee_profile' emp_id=emp_id %}" class="btn btn-primary btn-sm mt-2">Update Now</a>
+        </div>
+        {% endif %}
+
+
+        <!-- GRID -->
+        <section class="row g-4">
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <h5>Employee ID</h5>
+                    <p>{{ emp_unique_id }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <h5>Company</h5>
+                    <p>{{ company_name }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <h5>Position</h5>
+                    <p>{{ emp_position }}</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="dashboard-card">
+                    <h5>Your Working Time</h5>
+                    <p>{{ start_time|time:"h:i A" }} – {{ end_time|time:"h:i A" }}</p>
+                </div>
+            </div>
+
+
+            <!-- SALARY SECTION -->
+            <div class="col-md-12">
+                <div class="salary-box">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h5 class="text-primary">💰 Salary Details</h5>
+                            <small class="text-muted">Monthly breakdown</small>
+                        </div>
+
+                        <a href="{% url 'employee_payment_history' %}"><button class="action-btn">View
+                                Payslips</button></a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Basic Salary:</strong> ₹{{ basic_salary }}</p>
+                            <p><strong>HRA:</strong> ₹{{ hra }}</p>
+                            <p><strong>Allowances:</strong> ₹{{ allowances }}</p>
+                            <p><strong>Deductions:</strong> ₹{{ deductions }}</p>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div style="background:rgba(13,110,253,0.08); padding:15px; border-radius:12px;">
+                                <p class="text-muted mb-1">Total Gross Salary</p>
+                                <h4 class="text-primary fw-bold">₹{{ gross_salary }}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- CTA BUTTON -->
+        <div class="text-center mt-4">
+            <a href="{% url 'attendance_mark' %}" class="action-btn">
+                <i class="ri-pencil-line"></i> Mark Attendance
+            </a>
+        </div>
+
+    </main>
+
+
+    <!-- JS FUNCTIONS (No changes removed) -->
+    <script>
+        /* Toggle Sidebar */
+        function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    if (window.innerWidth <= 768) {       // 🔥 IMPORTANT
+        sidebar.classList.toggle("show");
+
+        if (sidebar.classList.contains("show")) {
+            menuBtn.style.display = "none";
+        } else {
+            setTimeout(() => menuBtn.style.display = "block", 250);
+        }
+    }
+}
+
+
+        /* Close sidebar on outside click */
+       document.addEventListener("click", function (e) {
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    if (window.innerWidth <= 768 && sidebar.classList.contains("show")) {
+        if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+            sidebar.classList.remove("show");
+            setTimeout(() => menuBtn.style.display = "block", 200);
+        }
+    }
+});
+
+        window.addEventListener("resize", function () {
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove("show"); // desktop always open
+        menuBtn.style.display = "none";   // hide menu button on desktop
+    } else {
+        menuBtn.style.display = sidebar.classList.contains("show") ? "none" : "block";
+    }
+});
+
+        /* Profile Menu Toggle */
+        const profileIcon = document.getElementById("profileIcon");
+        const profileMenu = document.getElementById("profileMenu");
+
+        profileIcon.addEventListener("click", function (e) {
+            e.stopPropagation();
+            profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!profileMenu.contains(e.target) && e.target !== profileIcon) {
+                profileMenu.style.display = "none";
+            }
+        });
+    </script>
+
+</body>
+
+</html>

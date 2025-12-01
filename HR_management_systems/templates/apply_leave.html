@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply Leave</title>
+
+<!-- Bootstrap & Remix Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+<style>
+/* 🌟 GLOBAL */
+body {
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding-top: 70px; /* space for navbar */
+}
+
+/* 🌟 NAVBAR */
+.navbar {
+    padding: 15px 20px;
+}
+
+/* 🌟 FORM CARD */
+.leave-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.leave-card h4 {
+    color: #0044cc;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 25px;
+}
+.leave-card .form-label {
+    font-weight: 600;
+}
+
+/* 🌟 BUTTONS */
+.btn-primary {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 10px 20px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.btn-primary:hover {
+    background: #0044cccc;
+}
+
+/* 🌟 RESPONSIVE */
+@media (max-width: 576px) {
+    .leave-card {
+        padding: 20px;
+        margin: 20px;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark shadow-sm fixed-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <span class="navbar-brand fw-bold">Employee Portal</span>
+        <div class="d-flex gap-2">
+            <a href="{% url 'leave_status' %}" class="btn btn-success btn-sm">Check leave status</a>
+            <a href="{% url 'employee_home' %}" class="btn btn-warning btn-sm">Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<!-- 🌟 Main Leave Form -->
+<section class="leave-card shadow-sm mt-4">
+    <h4>Apply Leave</h4>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Leave Type</label>
+            <select name="leave_type" class="form-select" required>
+                <option value="">Select Type</option>
+                <option value="CASUAL">Casual Leave</option>
+                <option value="SICK">Sick Leave</option>
+                <option value="PAID">Paid Leave</option>
+                <option value="OTHER">Other</option>
+            </select>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label">From Date</label>
+                <input type="date" name="from_date" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">To Date</label>
+                <input type="date" name="to_date" class="form-control" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Reason</label>
+            <textarea class="form-control" name="reason" rows="3" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Document (Optional)</label>
+            <input type="file" name="document" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+    </form>
+</section>
+
+</body>
+</html>
