@@ -166,7 +166,7 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "gokulkrishnabnair@gmail.com"
-EMAIL_HOST_PASSWORD = "rvag rxab wlus qybo"
+EMAIL_HOST_PASSWORD = "rvagrxabwlusqybo"
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 USE_TZ = False
