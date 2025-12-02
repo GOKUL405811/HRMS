@@ -563,40 +563,52 @@ def HR_profile(request, hr_id):
         new_additional_email = request.POST.get("additional_email")
         hr.company_type = request.POST.get("company_type")
 
-        # 📧 If additional email changed → send OTP
+                # 📧 If additional email changed → send OTP
         if new_additional_email and new_additional_email != hr.additional_email:
             # 🧩 Store previously verified additional email
             if hr.otp_verified and hr.additional_email:
                 hr.previous_verified_email = hr.additional_email
 
+            # set new email and generate otp
             hr.additional_email = new_additional_email
-            otp = hr.generate_otp()
 
-            try:
-                send_mail(
-                    subject="HR Profile Email Verification OTP",
-                    message=(
-                        f"Dear {hr.hr_name or hr.company_name},\n\n"
-                        f"Your OTP for email verification is: {otp}\n"
-                        f"This code is valid for 2 minutes.\n\n"
-                        f"Thank you,\nYour HR Portal"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[new_additional_email],
-                    fail_silently=False,
-                )
+            # generate_otp() assumed to set hr.otp_code and hr.otp_expiry and return otp
+            if hasattr(hr, "generate_otp"):
+                otp = hr.generate_otp()
+            else:
+                otp = str(randint(100000, 999999))
+                hr.otp_code = otp
+                from django.utils import timezone
+                hr.otp_expiry = timezone.now() + timedelta(minutes=2)
+
+            # save token fields before sending email
+            hr.save(update_fields=["previous_verified_email", "additional_email", "otp_code", "otp_expiry"])
+
+            sent_ok = send_email_safe(
+                subject="HR Profile Email Verification OTP",
+                message=(
+                    f"Dear {hr.hr_name or hr.company_name},\n\n"
+                    f"Your OTP for email verification is: {otp}\n"
+                    f"This code is valid for 2 minutes.\n\n"
+                    f"Thank you,\nYour HR Portal"
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[new_additional_email],
+                fail_silently=True,
+            )
+
+            if sent_ok:
                 hr.otp_verified = False
-                hr.save(update_fields=[
-                    "previous_verified_email",
-                    "additional_email",
-                    "otp_code",
-                    "otp_expiry",
-                    "otp_verified"
-                ])
+                hr.save(update_fields=["otp_verified"])
                 show_otp_prompt = True
                 messages.info(request, "📩 Please wait for OTP and check your mail to verify your new email address.")
-            except Exception as e:
-                messages.error(request, f"❌ Failed to send OTP: {e}")
+            else:
+                messages.error(request, "❌ Failed to send OTP (email not delivered). Your previous verified email has been kept.")
+                # restore previous verified email if exists
+                if hr.previous_verified_email:
+                    hr.additional_email = hr.previous_verified_email
+                    hr.otp_verified = True
+                    hr.save(update_fields=["additional_email", "otp_verified"])
 
             # Render directly (no redirect)
             return render(
