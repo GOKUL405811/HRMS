@@ -1093,17 +1093,20 @@ def forgot_password(request):
             request.session['reset_email'] = email
             request.session['otp'] = otp
 
-            # ✅ Send OTP to Employee Email
-            send_mail(
+            sent_ok = send_email_safe(
                 subject="Password Reset OTP",
                 message=f"Your OTP for password reset is: {otp}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
-                fail_silently=False,
+                fail_silently=True,
             )
+            if sent_ok:
+                messages.success(request, "✅ OTP sent to your email.")
+                return redirect("verify_otp")
+            else:
+                messages.error(request, "❌ Failed to send OTP. Please try again later.")
+                return redirect("forgot_password")
 
-            messages.success(request, "✅ OTP sent to your email.")
-            return redirect("verify_otp")
 
         # ✅ Check if email belongs to HR
         elif HRRegister.objects.filter(company_email=email).exists():
@@ -1145,16 +1148,20 @@ def verify_otp(request):
             otp = randint(100000, 999999)
             request.session["otp"] = otp
 
-            send_mail(
-                subject="Password Reset OTP (Resent)",
-                message=f"Your new OTP for password reset is: {otp}",
+            sent_ok = send_email_safe(
+                subject="Password Reset OTP",
+                message=f"Your OTP for password reset is: {otp}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
-                fail_silently=False,
+                fail_silently=True,
             )
+            if sent_ok:
+                messages.success(request, "✅ New OTP sent to your email.")
+                return redirect("verify_otp")
+            else:
+                messages.error(request, "❌ Failed to send OTP. Please try again later.")
+                return redirect("forgot_password")
 
-            messages.info(request, "📨 New OTP sent to your email.")
-            return redirect("verify_otp")
 
         # ✅ Verify OTP
         entered_otp = request.POST.get("otp")
