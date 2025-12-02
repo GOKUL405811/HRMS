@@ -19,7 +19,6 @@ from datetime import datetime, time as dt_time
 from datetime import timedelta
 from django.utils.dateparse import parse_date
 
-
 from django.conf import settings
 import logging
 
@@ -27,12 +26,11 @@ logger = logging.getLogger(__name__)
 
 def send_email_safe(subject, message, from_email, recipient_list, fail_silently=True):
     """
-    Send email but never raise an exception that kills the request.
-    Returns True if send attempted successfully (or fail_silently used),
-    False if an exception occurred but was caught.
+    Safe wrapper around Django send_mail.
+    Returns True if attempted (or no exception), False if an exception occurred.
+    Logs exceptions without raising so Railway workers don't exit.
     """
     try:
-        # Use Django's send_mail; we pass fail_silently to avoid exceptions
         send_mail(
             subject,
             message,
@@ -42,7 +40,6 @@ def send_email_safe(subject, message, from_email, recipient_list, fail_silently=
         )
         return True
     except Exception as e:
-        # Log full exception in server logs so you can inspect later
         logger.exception("Email sending failed: %s", e)
         return False
 
@@ -353,7 +350,7 @@ def HRRegistration_page(request):
         verify_link = request.build_absolute_uri(reverse("verify_email") + f"?token={token}")
 
         # ✅ Updated Email with login details
-        send_email_safe(
+        send_mail(
             "HR Account Verification & Login Details",
             f"Welcome {company_name},\n\n"
             f"Your HR account has been registered.\n\n"
@@ -363,7 +360,6 @@ def HRRegistration_page(request):
             f"Thank you!",
             settings.DEFAULT_FROM_EMAIL,
             [company_email],
-            fail_silently=True
         )
 
         messages.success(request, "Registration successful. Check email to verify!")
@@ -747,7 +743,7 @@ def employee_register(request):
         )
 
         try:
-            email_sent = send_email_safe(
+            send_mail(
                 "Employee Account Verification",
                 f"Welcome {name},\n\nYour employee account has been created.\n\n"
                 f"Login Email: {email}\n"
@@ -756,11 +752,11 @@ def employee_register(request):
                 "Thank you!",
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
-                fail_silently=True
-            )   
+            )
+            email_sent = True    # ★ NEW CODE
         except Exception as e:
-            email_sent = False
-            logger.exception("Employee registration email error: %s", e)
+            email_sent = False   # ★ NEW CODE
+            print("EMAIL ERROR:", e)
 
         # ======================================================
         #  If email sending fails → DO NOT ADD EMPLOYEE
