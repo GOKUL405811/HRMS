@@ -99,6 +99,9 @@ urlpatterns = [
     path("employee/<int:emp_id>/bank-details/", bank_details, name="bank_details"),
     path("check-bank/<int:emp_id>/", check_bank_details, name="check_bank_details"),
 
+    path("test-email/", test_email, name="test_email"),
+
+
 
 
 

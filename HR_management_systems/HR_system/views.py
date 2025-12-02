@@ -2175,3 +2175,15 @@ def generate_monthly_payroll(hr):
             next_pay_date=next_month_date,
             is_paid=False
         )
+
+
+def test_email(request):
+    result = send_email_safe(
+        "Test Email",
+        "If you receive this, SMTP works.",
+        settings.DEFAULT_FROM_EMAIL,
+        ["gokulkrishnabnair@gmail.com"],  # your email
+        fail_silently=False
+    )
+    return HttpResponse(f"Email sent: {result}")
+
