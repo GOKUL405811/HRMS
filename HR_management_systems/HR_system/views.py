@@ -761,7 +761,7 @@ def employee_register(request):
         )
 
         try:
-            send_mail(
+            email_sent = send_email_safe(
                 "Employee Account Verification",
                 f"Welcome {name},\n\nYour employee account has been created.\n\n"
                 f"Login Email: {email}\n"
@@ -770,11 +770,12 @@ def employee_register(request):
                 "Thank you!",
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
+                fail_silently=True
             )
-            email_sent = True    # ★ NEW CODE
         except Exception as e:
-            email_sent = False   # ★ NEW CODE
-            print("EMAIL ERROR:", e)
+            email_sent = False
+            logger.exception("Employee registration email error: %s", e)
+
 
         # ======================================================
         #  If email sending fails → DO NOT ADD EMPLOYEE
