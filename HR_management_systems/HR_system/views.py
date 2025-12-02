@@ -630,22 +630,23 @@ def HR_profile(request, hr_id):
     # ✅ Step 2: Resend OTP
     elif request.method == "POST" and 'resend_otp' in request.POST:
         if hr.additional_email:
-            otp = hr.generate_otp()
-            try:
-                send_mail(
-                    subject="Resend OTP - HR Email Verification",
-                    message=(
-                        f"Your new OTP is {otp}.\n"
-                        f"This code is valid for 2 minutes.\n\n"
-                        f"Thank you,\nYour HR Portal"
-                    ),
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[hr.additional_email],
-                    fail_silently=False,
-                )
+            otp = hr.generate_otp() if hasattr(hr, "generate_otp") else str(randint(100000, 999999))
+            sent_ok = send_email_safe(
+                subject="Resend OTP - HR Email Verification",
+                message=(
+                    f"Your new OTP is {otp}.\n"
+                    f"This code is valid for 2 minutes.\n\n"
+                    f"Thank you,\nYour HR Portal"
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[hr.additional_email],
+                fail_silently=True,
+            )
+            if sent_ok:
                 messages.info(request, "📨 New OTP sent to your email.")
-            except Exception as e:
-                messages.error(request, f"❌ Failed to resend OTP: {e}")
+            else:
+                messages.error(request, "❌ Failed to resend OTP (email not delivered).")
+
         else:
             messages.error(request, "❌ No additional email found to resend OTP.")
         return redirect('HR_profile', hr_id=hr.id)
