@@ -363,6 +363,7 @@ def HRRegistration_page(request):
             f"Thank you!",
             settings.DEFAULT_FROM_EMAIL,
             [company_email],
+            fail_silently=True
         )
 
         messages.success(request, "Registration successful. Check email to verify!")
