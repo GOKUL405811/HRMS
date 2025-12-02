@@ -360,7 +360,7 @@ def HRRegistration_page(request):
             f"Thank you!",
             settings.DEFAULT_FROM_EMAIL,
             [company_email],
-            fail_silently=True
+            fail_silently=False
         )
 
         if not sent_ok:
@@ -770,7 +770,7 @@ def employee_register(request):
                 "Thank you!",
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
-                fail_silently=True
+                fail_silently=False
             )
         except Exception as e:
             email_sent = False
