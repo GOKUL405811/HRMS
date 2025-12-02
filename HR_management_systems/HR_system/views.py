@@ -1115,20 +1115,21 @@ def forgot_password(request):
             request.session['otp'] = otp
 
             # ✅ Send OTP to HR Email
-            send_mail(
+            sent_ok = send_email_safe(
                 subject="Password Reset OTP",
                 message=f"Your OTP for password reset is: {otp}",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
-                fail_silently=False,
+                fail_silently=True,
             )
 
-            messages.success(request, "✅ OTP sent to your email.")
-            return redirect("verify_otp")
+            if sent_ok:
+                messages.success(request, "✅ OTP sent to your email.")
+                return redirect("verify_otp")
+            else:
+                messages.error(request, "❌ Email not registered.")
+                return redirect("forgot_password")
 
-        else:
-            messages.error(request, "❌ Email not registered.")
-            return redirect("forgot_password")
 
     return render(request, "forgot_password.html")
 
