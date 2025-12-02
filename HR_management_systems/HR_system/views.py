@@ -350,7 +350,7 @@ def HRRegistration_page(request):
         verify_link = request.build_absolute_uri(reverse("verify_email") + f"?token={token}")
 
         # ✅ Updated Email with login details
-        send_mail(
+        sent_ok = send_email_safe(
             "HR Account Verification & Login Details",
             f"Welcome {company_name},\n\n"
             f"Your HR account has been registered.\n\n"
@@ -360,8 +360,13 @@ def HRRegistration_page(request):
             f"Thank you!",
             settings.DEFAULT_FROM_EMAIL,
             [company_email],
+            fail_silently=True
         )
 
+        if not sent_ok:
+            # Log visible message but don't block registration
+            messages.warning(request, "Registration succeeded but verification email could not be delivered.")
+        
         messages.success(request, "Registration successful. Check email to verify!")
         return redirect('login')
 
