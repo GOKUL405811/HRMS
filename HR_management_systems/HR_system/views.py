@@ -19,6 +19,34 @@ from datetime import datetime, time as dt_time
 from datetime import timedelta
 from django.utils.dateparse import parse_date
 
+
+from django.conf import settings
+import logging
+
+logger = logging.getLogger(__name__)
+
+def send_email_safe(subject, message, from_email, recipient_list, fail_silently=True):
+    """
+    Send email but never raise an exception that kills the request.
+    Returns True if send attempted successfully (or fail_silently used),
+    False if an exception occurred but was caught.
+    """
+    try:
+        # Use Django's send_mail; we pass fail_silently to avoid exceptions
+        send_mail(
+            subject,
+            message,
+            from_email,
+            recipient_list,
+            fail_silently=fail_silently,
+        )
+        return True
+    except Exception as e:
+        # Log full exception in server logs so you can inspect later
+        logger.exception("Email sending failed: %s", e)
+        return False
+
+
 # ----------------------------------------------------------------------------------------------
 from django.views.decorators.csrf import csrf_exempt
 import hashlib
@@ -325,7 +353,7 @@ def HRRegistration_page(request):
         verify_link = request.build_absolute_uri(reverse("verify_email") + f"?token={token}")
 
         # ✅ Updated Email with login details
-        send_mail(
+        send_email_safe(
             "HR Account Verification & Login Details",
             f"Welcome {company_name},\n\n"
             f"Your HR account has been registered.\n\n"
