@@ -26,7 +26,7 @@ print(
 # ❗ FIXED — Read API key from environment only
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
-
+DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
 
 # Railway dynamic PORT
 PORT = os.environ.get("PORT", "8000")
@@ -175,15 +175,7 @@ DEFAULT_ADMIN_PASSWORD = "Gokul@1234"
 
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp-relay.brevo.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 USE_TZ = False
