@@ -2177,13 +2177,20 @@ def generate_monthly_payroll(hr):
         )
 
 
+from django.core.mail import send_mail
+from django.http import HttpResponse
+
 def test_email(request):
-    result = send_email_safe(
-        "Test Email",
-        "If you receive this, SMTP works.",
-        settings.DEFAULT_FROM_EMAIL,
-        ["gokulkrishnabnair@gmail.com"],  # your email
-        fail_silently=False
-    )
-    return HttpResponse(f"Email sent: {result}")
+    try:
+        send_mail(
+            "SMTP Test",
+            "If you receive this, SMTP works.",
+            settings.DEFAULT_FROM_EMAIL,
+            ["gokulkrishnabnair@gmail.com"],
+            fail_silently=False
+        )
+        return HttpResponse("Email sent successfully!")
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}")
+
 
