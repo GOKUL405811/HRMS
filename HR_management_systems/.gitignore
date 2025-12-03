@@ -1,18 +1,7 @@
-# Ignore environment file
 .env
-
-# Ignore compiled files
 __pycache__/
 *.pyc
-
-# Ignore static build
 staticfiles/
-
-# Ignore media uploads
 media/
-
-# VSCode
 .vscode/
-
-# Python virtual environment
 venv/

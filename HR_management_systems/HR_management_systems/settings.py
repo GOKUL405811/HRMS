@@ -9,12 +9,13 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
-from pathlib import Path
 import os
+from pathlib import Path
 import pymysql
-load_dotenv()
+from dotenv import load_dotenv
+
 pymysql.install_as_MySQLdb()
+load_dotenv()
 
 
 # Railway dynamic PORT
@@ -162,8 +163,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DEFAULT_ADMIN_EMAIL = "gokulkrishnabnair@gmail.com"
 DEFAULT_ADMIN_PASSWORD = "Gokul@1234"
 
-from dotenv import load_dotenv
-import os
+
+
 
 
 
