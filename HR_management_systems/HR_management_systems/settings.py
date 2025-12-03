@@ -16,6 +16,12 @@ from dotenv import load_dotenv
 
 pymysql.install_as_MySQLdb()
 load_dotenv()
+print(
+    "Email env present:",
+    bool(os.getenv("EMAIL_HOST_USER")),
+    bool(os.getenv("EMAIL_HOST_PASSWORD")),
+)
+
 
 
 # Railway dynamic PORT
@@ -162,9 +168,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DEFAULT_ADMIN_EMAIL = "gokulkrishnabnair@gmail.com"
 DEFAULT_ADMIN_PASSWORD = "Gokul@1234"
-
-
-
 
 
 
