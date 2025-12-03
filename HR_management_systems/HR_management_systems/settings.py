@@ -20,7 +20,11 @@ print(
     "Email env present:",
     bool(os.getenv("EMAIL_HOST_USER")),
     bool(os.getenv("EMAIL_HOST_PASSWORD")),
+    bool(os.getenv("BREVO_API_KEY")),
 )
+
+# ❗ FIXED — Read API key from environment only
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
 
 

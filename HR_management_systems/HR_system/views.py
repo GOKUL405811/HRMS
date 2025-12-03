@@ -18,30 +18,77 @@ import random
 from datetime import datetime, time as dt_time
 from datetime import timedelta
 from django.utils.dateparse import parse_date
+import logging
+
+
+
+
 
 from django.conf import settings
 import logging
+import os
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 
 logger = logging.getLogger(__name__)
 
+def send_email_brevo_api(subject, message, from_email, recipient_list):
+    """
+    Send email using Brevo HTTP API (no SMTP, no blocked ports).
+    Returns True on success, False on failure.
+    """
+    api_key = os.getenv("BREVO_API_KEY") or getattr(settings, "BREVO_API_KEY", None)
+    if not api_key:
+        logger.error("BREVO_API_KEY is missing – cannot send email.")
+        return False
+
+    configuration = sib_api_v3_sdk.Configuration()
+    configuration.api_key['api-key'] = api_key
+
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+        sib_api_v3_sdk.ApiClient(configuration)
+    )
+
+    # Fallbacks
+    sender_email = from_email or getattr(settings, "DEFAULT_FROM_EMAIL", None)
+    if not sender_email:
+        logger.error("No sender email configured (DEFAULT_FROM_EMAIL / from_email).")
+        return False
+
+    # convert plain text to simple HTML
+    html_content = message.replace("\n", "<br>")
+
+    to_list = [{"email": email} for email in recipient_list]
+
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=to_list,
+        sender={"email": sender_email},
+        subject=subject,
+        html_content=html_content,
+    )
+
+    try:
+        api_instance.send_transac_email(send_smtp_email)
+        return True
+    except ApiException as e:
+        logger.exception("Brevo API error: %s", e)
+        return False
+
+
 def send_email_safe(subject, message, from_email, recipient_list, fail_silently=True):
     """
-    Safe wrapper around Django send_mail.
-    Returns True if attempted (or no exception), False if an exception occurred.
-    Logs exceptions without raising so Railway workers don't exit.
+    Wrapper used everywhere in your project.
+    Now uses Brevo API instead of Django SMTP.
     """
     try:
-        send_mail(
-            subject,
-            message,
-            from_email,
-            recipient_list,
-            fail_silently=fail_silently,
-        )
-        return True
+        ok = send_email_brevo_api(subject, message, from_email, recipient_list)
+        if not ok and not fail_silently:
+            raise RuntimeError("Brevo API failed")
+        return ok
     except Exception as e:
         logger.exception("Email sending failed: %s", e)
         return False
+
 
 
 # ----------------------------------------------------------------------------------------------
@@ -2177,20 +2224,15 @@ def generate_monthly_payroll(hr):
         )
 
 
-from django.core.mail import send_mail
-from django.http import HttpResponse
-
 def test_email(request):
-    try:
-        send_mail(
-            "SMTP Test",
-            "If you receive this, SMTP works.",
-            settings.DEFAULT_FROM_EMAIL,
-            ["gokulkrishnabnair@gmail.com"],
-            fail_silently=False
-        )
-        return HttpResponse("Email sent successfully!")
-    except Exception as e:
-        return HttpResponse(f"Error: {str(e)}")
+    result = send_email_safe(
+        "Test Email",
+        "If you receive this, SMTP works.",
+        settings.DEFAULT_FROM_EMAIL,
+        ["gokulkrishnabnair@gmail.com"],  # your email
+        fail_silently=False
+    )
+    return HttpResponse(f"Email sent: {result}")
+
 
 
