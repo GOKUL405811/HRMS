@@ -24,7 +24,6 @@ BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL")
 DEFAULT_FROM_EMAIL = BREVO_SENDER_EMAIL
 
-EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 # Railway dynamic PORT
 PORT = os.environ.get("PORT", "8000")
