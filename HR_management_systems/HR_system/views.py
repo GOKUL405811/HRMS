@@ -20,68 +20,52 @@ from datetime import timedelta
 from django.utils.dateparse import parse_date
 import logging
 
-
-
-
-
-from django.conf import settings
-import logging
-import os
 import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
 logger = logging.getLogger(__name__)
 
-def send_email_brevo_api(subject, message, from_email, recipient_list):
-    """
-    Send email using Brevo HTTP API (no SMTP, no blocked ports).
-    Returns True on success, False on failure.
-    """
-    api_key = os.getenv("BREVO_API_KEY") or getattr(settings, "BREVO_API_KEY", None)
+def send_email_brevo_api(subject, message, recipient_list):
+    api_key = settings.BREVO_API_KEY
     if not api_key:
-        logger.error("BREVO_API_KEY is missing – cannot send email.")
+        logger.error("Missing BREVO_API_KEY.")
         return False
 
     configuration = sib_api_v3_sdk.Configuration()
-    configuration.api_key['api-key'] = api_key
+    configuration.api_key["api-key"] = api_key
 
     api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
         sib_api_v3_sdk.ApiClient(configuration)
     )
 
-    # Fallbacks
-    sender_email = from_email or getattr(settings, "DEFAULT_FROM_EMAIL", None)
-    if not sender_email:
-        logger.error("No sender email configured (DEFAULT_FROM_EMAIL / from_email).")
-        return False
+    # ALWAYS send from verified sender
+    sender_email = settings.BREVO_SENDER_EMAIL
 
-    # convert plain text to simple HTML
     html_content = message.replace("\n", "<br>")
-
     to_list = [{"email": email} for email in recipient_list]
 
-    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-        to=to_list,
+    email_data = sib_api_v3_sdk.SendSmtpEmail(
         sender={"email": sender_email},
+        to=to_list,
         subject=subject,
         html_content=html_content,
     )
 
     try:
-        api_instance.send_transac_email(send_smtp_email)
+        api_instance.send_transac_email(email_data)
         return True
-    except ApiException as e:
-        logger.exception("Brevo API error: %s", e)
+    except Exception as e:
+        logger.error(f"Brevo API Error: {e}")
         return False
 
 
-def send_email_safe(subject, message, from_email, recipient_list, fail_silently=True):
+def send_email_safe(subject, message, recipient_list, fail_silently=True):
     """
     Wrapper used everywhere in your project.
     Now uses Brevo API instead of Django SMTP.
     """
     try:
-        ok = send_email_brevo_api(subject, message, from_email, recipient_list)
+        ok = send_email_brevo_api(subject, message, recipient_list)
         if not ok and not fail_silently:
             raise RuntimeError("Brevo API failed")
         return ok
@@ -405,7 +389,6 @@ def HRRegistration_page(request):
             f"✅ Password: {company_password}\n\n"
             f"Please verify your email:\n{verify_link}\n\n"
             f"Thank you!",
-            settings.DEFAULT_FROM_EMAIL,
             [company_email],
             fail_silently=False
         )
@@ -639,7 +622,6 @@ def HR_profile(request, hr_id):
                     f"This code is valid for 2 minutes.\n\n"
                     f"Thank you,\nYour HR Portal"
                 ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[new_additional_email],
                 fail_silently=True,
             )
@@ -685,7 +667,6 @@ def HR_profile(request, hr_id):
                     f"This code is valid for 2 minutes.\n\n"
                     f"Thank you,\nYour HR Portal"
                 ),
-                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[hr.additional_email],
                 fail_silently=True,
             )
@@ -815,7 +796,6 @@ def employee_register(request):
                 f"Password: {password}\n\n"
                 f"Verify here:\n{verify_link}\n\n"
                 "Thank you!",
-                settings.DEFAULT_FROM_EMAIL,
                 [email],
                 fail_silently=False
             )
@@ -1143,7 +1123,6 @@ def forgot_password(request):
             sent_ok = send_email_safe(
                 subject="Password Reset OTP",
                 message=f"Your OTP for password reset is: {otp}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
                 fail_silently=True,
             )
@@ -1165,7 +1144,6 @@ def forgot_password(request):
             sent_ok = send_email_safe(
                 subject="Password Reset OTP",
                 message=f"Your OTP for password reset is: {otp}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
                 fail_silently=True,
             )
@@ -1199,7 +1177,6 @@ def verify_otp(request):
             sent_ok = send_email_safe(
                 subject="Password Reset OTP",
                 message=f"Your OTP for password reset is: {otp}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
                 fail_silently=True,
             )
@@ -2227,12 +2204,12 @@ def generate_monthly_payroll(hr):
 def test_email(request):
     result = send_email_safe(
         "Test Email",
-        "If you receive this, SMTP works.",
-        settings.DEFAULT_FROM_EMAIL,
-        ["gokulkrishnabnair@gmail.com"],  # your email
+        "If you receive this message, Brevo API is working correctly.",
+        ["gokulkrishnabnair@gmail.com"],
         fail_silently=False
     )
     return HttpResponse(f"Email sent: {result}")
+
 
 
 

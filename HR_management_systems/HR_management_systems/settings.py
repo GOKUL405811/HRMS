@@ -16,17 +16,15 @@ from dotenv import load_dotenv
 
 pymysql.install_as_MySQLdb()
 load_dotenv()
-print(
-    "Email env present:",
-    bool(os.getenv("EMAIL_HOST_USER")),
-    bool(os.getenv("EMAIL_HOST_PASSWORD")),
-    bool(os.getenv("BREVO_API_KEY")),
-)
+
 
 # ❗ FIXED — Read API key from environment only
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
-DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
+BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", "gokulkrishnabnair@gmail.com")
+DEFAULT_FROM_EMAIL = BREVO_SENDER_EMAIL
+
+EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 # Railway dynamic PORT
 PORT = os.environ.get("PORT", "8000")
