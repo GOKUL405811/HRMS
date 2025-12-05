@@ -82,11 +82,23 @@ body {
     <ul class="list-group list-group-flush mb-4">
         <li class="list-group-item"><strong>Company Email:</strong> {{ hr.company_email }}</li>
 
-        <!-- ❌ REMOVED ADDITIONAL EMAIL DISPLAY -->
+        <!-- Additional email removed completely -->
 
         <li class="list-group-item"><strong>Phone:</strong> {{ hr.company_phone|default:"Not Provided" }}</li>
         <li class="list-group-item"><strong>Address:</strong> {{ hr.company_address|default:"Not Provided" }}</li>
-        <li class="list-group-item"><strong>Location:</strong> {{ hr.company_location|default:"Not Set" }}</li>
+
+        <!-- LOCATION DISPLAY WITH MAP CLICK (RESTORED) -->
+        <li class="list-group-item">
+            <strong>Location:</strong>
+            {% if hr.company_location %}
+                <a href="https://www.google.com/maps?q={{ hr.company_location|urlencode }}" target="_blank">
+                    {{ hr.company_location }}
+                </a>
+            {% else %}
+                Not Set
+            {% endif %}
+        </li>
+
         <li class="list-group-item"><strong>Company Type:</strong> {{ hr.company_type|default:"Not Specified" }}</li>
     </ul>
 
@@ -114,11 +126,17 @@ body {
                     <textarea name="company_address" class="form-control">{{ hr.company_address }}</textarea>
                 </div>
 
-                <!-- ❌ REMOVED ADDITIONAL EMAIL INPUT -->
-
+                <!-- LOCATION INPUT WITH MAP BUTTON (RESTORED) -->
                 <div class="mb-3">
                     <label>Company Location</label>
-                    <input type="text" name="company_location" class="form-control" value="{{ hr.company_location }}">
+                    <div class="input-group">
+                        <input id="locationField" type="text" name="company_location" class="form-control" value="{{ hr.company_location }}" placeholder="Enter or search in Google Maps">
+
+                        <button type="button" id="openMapBtn" class="btn btn-outline-primary">
+                            <i class="ri-map-pin-line"></i> Open Google Map
+                        </button>
+                    </div>
+                    <small class="text-muted">Click the button to open Google Maps, find your company, and paste the address.</small>
                 </div>
 
                 <div class="mb-3">
@@ -143,6 +161,13 @@ body {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- RESTORED GOOGLE MAP BUTTON BEHAVIOR -->
+<script>
+document.getElementById("openMapBtn")?.addEventListener("click", () => {
+    window.open('https://www.google.com/maps', '_blank');
+});
+</script>
 
 </body>
 </html>

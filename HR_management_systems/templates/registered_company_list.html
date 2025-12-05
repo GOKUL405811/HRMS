@@ -195,7 +195,6 @@ body {
                 <tr>
                     <th>Company Name</th>
                     <th>Company Type</th>
-                    <th>Enquiry Email</th>
                     <th>Location</th>
                 </tr>
             </thead>
@@ -206,16 +205,6 @@ body {
 
                     <td>{{ company.company_type }}</td>
 
-                    <!-- Email -->
-                    <td>
-                        {% if company.additional_email %}
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company.additional_email|urlencode }}" target="_blank">
-                            <i class="ri-mail-line"></i> {{ company.additional_email }}
-                        </a>
-                        {% else %}
-                        <span class="text-muted">—</span>
-                        {% endif %}
-                    </td>
 
                     <!-- Location -->
                     <td>
@@ -251,7 +240,6 @@ body {
                 <h5>{{ company.company_name }}</h5>
 
                 <p><strong>Type:</strong> {{ company.company_type }}</p>
-
 
                 <!-- Location -->
                 <p><strong>Location:</strong>
