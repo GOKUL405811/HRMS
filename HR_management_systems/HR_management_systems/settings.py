@@ -17,179 +17,145 @@ from dotenv import load_dotenv
 pymysql.install_as_MySQLdb()
 load_dotenv()
 
-
-# ❗ FIXED — Read API key from environment only
-BREVO_API_KEY = os.getenv("BREVO_API_KEY")
-
-BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL")
-DEFAULT_FROM_EMAIL = BREVO_SENDER_EMAIL
-
-
-# Railway dynamic PORT
-PORT = os.environ.get("PORT", "8000")
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j@i0tz%w#-73r$x#e%fpf$#8&i3pg4g-5s&p41z1rv+dzf15an'
-
-# SECURITY WARNING: don't run with debug turned on in production!
+# ---------------------------------------------------------
+# SECURITY SETTINGS
+# ---------------------------------------------------------
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://hrms-production-7baf.up.railway.app",
     "http://hrms-production-7baf.up.railway.app",
 ]
 
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = True
-
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 EMAIL_TIMEOUT = 20
 
+# ---------------------------------------------------------
+# BREVO EMAIL
+# ---------------------------------------------------------
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL")
+DEFAULT_FROM_EMAIL = BREVO_SENDER_EMAIL
 
-# Application definition
-
+# ---------------------------------------------------------
+# APPLICATIONS
+# ---------------------------------------------------------
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'HR_system',
-    
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "HR_system",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'HR_management_systems.urls'
+ROOT_URLCONF = "HR_management_systems.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": ["templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'HR_management_systems.wsgi.application'
+WSGI_APPLICATION = "HR_management_systems.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# ---------------------------------------------------------
+# DATABASE (Railway MySQL)
+# ---------------------------------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',  
-        'USER': 'root',
-        'PASSWORD': 'gEgZLfucyubGqBvQTbaTOxVsPcYSACwT', 
-        'HOST': 'yamabiko.proxy.rlwy.net',
-        'PORT': '34227',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "railway",
+        "USER": "root",
+        "PASSWORD": "gEgZLfucyubGqBvQTbaTOxVsPcYSACwT",
+        "HOST": "yamabiko.proxy.rlwy.net",
+        "PORT": "34227",
+        "OPTIONS": {"init_command": "SET sql_mode='STRICT_TRANS_TABLES'"},
     }
 }
 
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
+# ---------------------------------------------------------
+# PASSWORD VALIDATION
+# ---------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-
+# ---------------------------------------------------------
+# INTERNATIONALIZATION
+# ---------------------------------------------------------
+LANGUAGE_CODE = "en-us"
 
 USE_I18N = True
+USE_TZ = False
+TIME_ZONE = "Asia/Kolkata"
 
+# ---------------------------------------------------------
+# STATIC & MEDIA FILES
+# ---------------------------------------------------------
 
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+# *** IMPORTANT ***
+# Django must NOT compress or pipeline static files on Railway.
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]  # if you have a global static folder
+# ---------------------------------------------------------
+# DEFAULT PRIMARY KEY
+# ---------------------------------------------------------
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+# ---------------------------------------------------------
+# ADMIN LOGIN
+# ---------------------------------------------------------
 DEFAULT_ADMIN_EMAIL = "gokulkrishnabnair@gmail.com"
 DEFAULT_ADMIN_PASSWORD = "Gokul@1234"
 
-
-
-
-
-
-USE_TZ = False
-TIME_ZONE = 'Asia/Kolkata'
-
-
-# ---------- PayU Test Credentials ----------
+# ---------------------------------------------------------
+# PAYU PAYMENT CONFIG
+# ---------------------------------------------------------
 PAYU_MERCHANT_KEY = "JtYEGm"
 PAYU_MERCHANT_SALT = "AjDBn6p4LzuUgjmRdbqDZWeB65VTnYuO"
-
-# Test environment payment URL
 PAYU_URL = "https://test.payu.in/_payment"
-
-
