@@ -192,6 +192,4 @@ PAYU_MERCHANT_SALT = "AjDBn6p4LzuUgjmRdbqDZWeB65VTnYuO"
 # Test environment payment URL
 PAYU_URL = "https://test.payu.in/_payment"
 
-# Force Django to serve staticfiles normally on Railway
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
