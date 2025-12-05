@@ -61,28 +61,6 @@ class HRRegister(models.Model):
 
     def __str__(self):
         return self.company_name
-    
-    def generate_otp(self):
-        """Generate 6-digit OTP valid for 2 minutes."""
-        otp = str(random.randint(100000, 999999))
-        self.otp_code = otp
-        # expires in 2 minutes
-        self.otp_expiry = timezone.now() + timedelta(minutes=2)  
-        self.save(update_fields=["otp_code", "otp_expiry"])
-        return otp
-
-    def is_otp_valid(self, entered_otp):
-        """Check if OTP exists, is not expired, and matches entered code."""
-        # ❌ Avoid crash when fields are None
-        if not self.otp_code or not self.otp_expiry:
-            return False
-        
-        # ❌ Expired
-        if timezone.now() > self.otp_expiry:
-            return False
-        
-        # ✅ Correct match
-        return str(entered_otp).strip() == str(self.otp_code).strip()
 
 
 # ------------------------------------------------------------------------------------

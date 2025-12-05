@@ -252,16 +252,6 @@ body {
 
                 <p><strong>Type:</strong> {{ company.company_type }}</p>
 
-                <!-- Email -->
-                <p><strong>Email:</strong>
-                    {% if company.additional_email %}
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company.additional_email|urlencode }}" target="_blank">
-                            {{ company.additional_email }}
-                        </a>
-                    {% else %}
-                        <span class="text-muted">—</span>
-                    {% endif %}
-                </p>
 
                 <!-- Location -->
                 <p><strong>Location:</strong>
