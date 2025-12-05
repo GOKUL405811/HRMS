@@ -73,10 +73,15 @@ class HRRegister(models.Model):
 
     def is_otp_valid(self, entered_otp):
         """Check if OTP exists, is not expired, and matches entered code."""
+        # ❌ Avoid crash when fields are None
         if not self.otp_code or not self.otp_expiry:
             return False
+        
+        # ❌ Expired
         if timezone.now() > self.otp_expiry:
             return False
+        
+        # ✅ Correct match
         return str(entered_otp).strip() == str(self.otp_code).strip()
 
 

@@ -574,16 +574,22 @@ def HR_profile(request, hr_id):
                 hr.otp_verified = True
                 hr.otp_code = None
                 hr.otp_expiry = None
-                hr.save(update_fields=["additional_email", "otp_verified", "otp_code", "otp_expiry"])
+                hr.previous_verified_email = None   # 🔥 IMPORTANT FIX
+                hr.save(update_fields=[
+                    "additional_email", "otp_verified",
+                    "otp_code", "otp_expiry", "previous_verified_email"
+                ])
                 return JsonResponse({
                     "status": "success",
                     "restored_email": restored_email,
                     "message": "✅ Previous verified additional email restored successfully."
                 })
+
             return JsonResponse({
                 "status": "error",
                 "message": "No previous verified email found."
             }, status=400)
+
 
     # ✅ Step 1: Update profile details & send OTP if email changed
     if request.method == "POST" and 'save_profile' in request.POST:
@@ -595,7 +601,7 @@ def HR_profile(request, hr_id):
         hr.company_type = request.POST.get("company_type")
 
                 # 📧 If additional email changed → send OTP
-        if new_additional_email and new_additional_email != hr.additional_email:
+        if (new_additional_email or "").strip() != (hr.additional_email or "").strip():
             # 🧩 Store previously verified additional email
             if hr.otp_verified and hr.additional_email:
                 hr.previous_verified_email = hr.additional_email
