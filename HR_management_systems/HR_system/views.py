@@ -397,7 +397,7 @@ def HRRegistration_page(request):
             # Log visible message but don't block registration
             messages.warning(request, "Registration succeeded but verification email could not be delivered.")
         
-        messages.success(request, "Registration successful. Check email to verify!")
+        messages.success(request, "Registration successful. Check email spam folder to verify!")
         return redirect('login')
 
     return render(request, 'HR_registration.html')
@@ -792,8 +792,6 @@ def employee_register(request):
             email_sent = send_email_safe(
                 "Employee Account Verification",
                 f"Welcome {name},\n\nYour employee account has been created.\n\n"
-                f"Login Email: {email}\n"
-                f"Password: {password}\n\n"
                 f"Verify here:\n{verify_link}\n\n"
                 "Thank you!",
                 [email],
