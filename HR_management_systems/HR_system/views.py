@@ -792,6 +792,8 @@ def employee_register(request):
             email_sent = send_email_safe(
                 "Employee Account Verification",
                 f"Welcome {name},\n\nYour employee account has been created.\n\n"
+                f"Login Email: {email}\n"
+                f"Password: {password}\n\n"
                 f"Verify here:\n{verify_link}\n\n"
                 "Thank you!",
                 [email],
