@@ -103,7 +103,10 @@ urlpatterns = [
 
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Always serve media files — Railway needs this because DEBUG=False
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Serve static files (optional fallback)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 
